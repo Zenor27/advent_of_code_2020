@@ -16,14 +16,17 @@ isTree map x y =
         _map map !! currentY !! currentX == '#'
 
 
-countAllTrees :: Map -> Int
-countAllTrees map =
+countAllTrees :: Map -> Int -> Int -> Int
+countAllTrees map xOffset yOffset =
     let
         countRec x y treeSum
-            | y == height map = treeSum
-            | otherwise = if isTree map x y then countRec (x + 3) (y + 1) (treeSum + 1) else countRec (x + 3) (y + 1) treeSum
+            | y >= height map = treeSum
+            | otherwise = if isTree map x y then
+                            countRec (x + xOffset) (y + yOffset) (treeSum + 1)
+                          else
+                            countRec (x + xOffset) (y + yOffset) treeSum
     in
-        countRec 0 0 0
+        countRec 0 0 (if isTree map 0 0 then 1 else 0)
 
 -- Parsing stuff
 
@@ -35,6 +38,8 @@ getInputFile = do
 
 main = do
     map <- getInputFile
-    let result = countAllTrees map
+    let firstResult = countAllTrees map 3 1
+    putStrLn (show firstResult)
+    let result = product [countAllTrees map 3 1, countAllTrees map 1 1, countAllTrees map 5 1, countAllTrees map 7 1, countAllTrees map 1 2]
     putStrLn (show result)
     return ()
