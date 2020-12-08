@@ -14,6 +14,12 @@ hasShinyGold currentBag bags set | currentBag == "shiny gold" = (True, set)
                                  | (Map.findWithDefault [] currentBag bags) == [] = (False, set)
                                  | otherwise = foldl (\acc k -> if (fst $ hasShinyGold (snd k) bags (snd acc)) then (True, Set.insert currentBag (snd acc)) else (fst acc, snd acc)) (False, set) $ Map.findWithDefault [] currentBag bags
 
+countBagsContainingShinyGold :: Bags -> Int
+countBagsContainingShinyGold bags =
+    let
+        bagsSet = Set.empty
+    in
+        (length $ foldl (\acc k -> if (fst $ hasShinyGold k bags acc) then Set.insert k acc else acc) Set.empty $ filter (/= "shiny gold") $ Map.keys bags)
 
 countBagsInShinyGold :: String -> Bags -> Int
 countBagsInShinyGold currentBag bags | (Map.findWithDefault [] currentBag bags) == [] = 1
@@ -50,8 +56,8 @@ getInputFile = do
 
 main = do
     bags <- getInputFile
-    -- let result = foldl (\acc k -> if (fst $ hasShinyGold k bags acc) then Set.insert k acc else acc) Set.empty $ filter (/= "shiny gold") $ Map.keys bags
-    -- putStrLn (show $ length result)
+    let test =  countBagsContainingShinyGold bags
+    putStrLn . show $ test
 
     let result = (countBagsInShinyGold "shiny gold" bags) - 1 -- Remove shiny gold
     putStrLn . show $ result
