@@ -19,6 +19,17 @@ getFirstInvalidNumber numbers =
         
 
 
+getRange :: Int -> [Int] -> Int
+getRange invalidNumber numbers =
+    let
+        _getRange :: Int -> [Int] -> [Int] -> Int 
+        _getRange acc (head : tail) range | acc + head == invalidNumber = minimum (head : range) + maximum (head : range)
+                                          | acc + head > invalidNumber = _getRange (acc - last range) (head : tail) (init range)
+                                          | otherwise = _getRange (acc + head) tail (head : range)
+
+    in
+        _getRange 0 numbers []
+
 getInputFile :: IO [Int]
 getInputFile = do
     contents <- readFile "input"
@@ -27,7 +38,10 @@ getInputFile = do
 main = do
     content <- getInputFile
 
-    let result = getFirstInvalidNumber content
-    putStrLn . show $ result
+    let invalidNumber = getFirstInvalidNumber content
+    putStrLn . show $ invalidNumber
+
+    let numberRange = getRange invalidNumber content
+    putStrLn . show $ numberRange
 
     return ()
